@@ -1,66 +1,161 @@
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView } from "react-native";
-import { useState } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+} from "react-native";
+import React, { useState } from "react";
+import { Picker } from "@react-native-picker/picker";
+import axios from "axios";
 
-export default function TelaFormulario({ navigation }) {
+export default function TelaFormulario() {
   const [form, setForm] = useState({
+    tipoDesastre: "Enchente",
     nome: "",
-    email: "",
-    numeroDeContato: "",
-    placaDaMoto: "",
-    modeloDaMoto: "",
-    estado: "",
-    cidade: "",
-    seuCEP: "",
-    seuEndereco: "",
-    observação: "",
+    celular: "",
+    data: "",
+    hora: "",
+    pessoas: "",
+    descricao: "",
   });
 
   const handleChange = (field, value) => {
     setForm({ ...form, [field]: value });
   };
 
-  const handleSubmit = () => {
-    console.log("Dados enviados:", form);
+  const handleSubmit = async () => {
+    try {
+      console.log("Formulário enviado:", form);
+  
+      const sendForm = {
+        nome: form.nome,
+        telefone: form.celular,
+        descricao: form.descricao,
+        hora: form.hora,
+        data: form.data,
+        quantidadePessoas: parseInt(form.pessoas),
+        tipoEvento: form.tipoDesastre.toUpperCase() // ex: "ENCHENTE", "DESLIZAMENTO"
+      };
+  
+      const response = await axios.post("http://localhost:8080/alertas", sendForm);
+  
+      console.log("Resposta da API:", response.data);
+      alert("Alerta enviado com sucesso!");
+  
+    } catch (error) {
+      console.error("Erro ao enviar o formulário:", error);
+      alert("Erro ao enviar alerta. Verifique sua conexão.");
+    }
+  };
+  
+
+  const handleCancel = () => {
+    setForm({
+      tipoDesastre: "Enchente",
+      nome: "",
+      celular: "",
+      data: "",
+      hora: "",
+      pessoas: "",
+      descricao: "",
+    });
   };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>📋 Cadastro de Informações</Text>
-      <Text style={styles.subtitle}>Preencha os campos abaixo para continuarmos 🚀</Text>
+      <Text style={styles.title}>📋 Cadastro de ocorrência</Text>
 
-      {Object.entries(form).map(([field, value]) => (
-        <View key={field} style={styles.inputBlock}>
-          <TextInput
-            style={styles.input}
-            placeholder={field
-              .replace(/([A-Z])/g, " $1")
-              .replace(/^./, (str) => str.toUpperCase()) + ":"}
-            placeholderTextColor="#999"
-            value={value}
-            onChangeText={(text) => handleChange(field, text)}
-            multiline={field === "observação"}
-            numberOfLines={field === "observação" ? 4 : 1}
-          />
+      <Text style={styles.subtitle}>
+        Registre rapidamente um desastre natural para ajudar autoridades e equipes de resgate.
+      </Text>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>INFORMAÇÕES DO DESASTRE</Text>
+      </View>
+
+      <View style={styles.inputGroup}>
+        <Text style={styles.label}>Tipo de Desastre</Text>
+        <View style={styles.pickerWrapper}>
+          <Picker
+            selectedValue={form.tipoDesastre}
+            onValueChange={(value) => handleChange("tipoDesastre", value)}
+            style={styles.picker}
+          >
+            <Picker.Item label="Enchente" value="Enchente" />
+            <Picker.Item label="Deslizamento" value="Deslizamento" />
+            <Picker.Item label="Incêndio" value="Incendio" />
+            <Picker.Item label="Terremoto" value="Terremoto" />
+            <Picker.Item label="Outro" value="Outro" />
+          </Picker>
         </View>
-      ))}
+      </View>
 
-      <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-        <Text style={styles.buttonText}>📨 Enviar Dados</Text>
-      </TouchableOpacity>
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>INFORMAÇÕES PESSOAIS</Text>
+      </View>
 
-      <View style={styles.previewCard}>
-        <Text style={styles.previewTitle}>🧾 Dados Digitados:</Text>
-        {Object.entries(form).map(([field, value]) => (
-          <Text key={field} style={styles.previewText}>
-            <Text style={styles.previewLabel}>
-              {field
-                .replace(/([A-Z])/g, " $1")
-                .replace(/^./, (str) => str.toUpperCase())}
-              :
-            </Text>{" "}
-            {value || "—"}
-          </Text>
-        ))}
+      <TextInput
+        style={styles.input}
+        placeholder="Nome completo"
+        placeholderTextColor="#999"
+        value={form.nome}
+        onChangeText={(text) => handleChange("nome", text)}
+      />
+
+      <TextInput
+        style={styles.input}
+        placeholder="Telefone celular"
+        placeholderTextColor="#999"
+        keyboardType="phone-pad"
+        value={form.celular}
+        onChangeText={(text) => handleChange("celular", text)}
+      />
+
+      <View style={styles.row}>
+        <TextInput
+          style={[styles.input, styles.rowItem]}
+          placeholder="Data (DD/MM/AAAA)"
+          placeholderTextColor="#999"
+          value={form.data}
+          onChangeText={(text) => handleChange("data", text)}
+        />
+        <TextInput
+          style={[styles.input, styles.rowItem]}
+          placeholder="Hora (HH:MM)"
+          placeholderTextColor="#999"
+          value={form.hora}
+          onChangeText={(text) => handleChange("hora", text)}
+        />
+      </View>
+
+      <TextInput
+        style={styles.input}
+        placeholder="Quantidade de pessoas"
+        placeholderTextColor="#999"
+        keyboardType="numeric"
+        value={form.pessoas}
+        onChangeText={(text) => handleChange("pessoas", text)}
+      />
+
+      <TextInput
+        style={[styles.input, styles.textarea]}
+        placeholder="Descrição da situação"
+        placeholderTextColor="#999"
+        value={form.descricao}
+        onChangeText={(text) => handleChange("descricao", text)}
+        multiline
+      />
+
+      <View style={styles.buttonRow}>
+        <TouchableOpacity style={styles.cancelButton} onPress={handleCancel}>
+          <Text style={styles.buttonText}>Cancelar</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.saveButton} onPress={handleSubmit}>
+          <Text style={styles.buttonText}>Salvar</Text>
+        </TouchableOpacity>
       </View>
     </ScrollView>
   );
@@ -68,84 +163,97 @@ export default function TelaFormulario({ navigation }) {
 
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,
     padding: 24,
-    backgroundColor: "#F0F4F8",
+    backgroundColor: "#FFF",
   },
   title: {
-    fontSize: 28,
+    fontSize: 26,
     fontWeight: "bold",
-    color: "#2A2A2A",
-    marginBottom: 8,
+    color: "#D32F2F",
     textAlign: "center",
+    marginBottom: 6,
   },
   subtitle: {
-    fontSize: 16,
-    color: "#555",
     textAlign: "center",
+    fontSize: 15,
+    color: "#555",
     marginBottom: 24,
   },
-  inputBlock: {
-    marginBottom: 16,
+  section: {
+    backgroundColor: "#FDE0DC",
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    marginBottom: 12,
   },
-  input: {
-    backgroundColor: "#FFF",
-    paddingVertical: 14,
-    paddingHorizontal: 16,
-    borderRadius: 12,
-    fontSize: 16,
+  sectionTitle: {
+    color: "#C62828",
+    fontWeight: "bold",
+    fontSize: 14,
+  },
+  inputGroup: {
+    marginBottom: 18,
+  },
+  label: {
+    fontSize: 14,
+    color: "#37474F",
+    marginBottom: 6,
+  },
+  pickerWrapper: {
     borderWidth: 1,
     borderColor: "#DDD",
-    shadowColor: "#000",
-    shadowOpacity: 0.05,
-    shadowOffset: { width: 0, height: 1 },
-    shadowRadius: 4,
-    elevation: 2,
+    borderRadius: 8,
+    backgroundColor: "#FAFAFA",
   },
-  button: {
-    backgroundColor: "#4E9F3D",
-    paddingVertical: 16,
-    borderRadius: 12,
+  picker: {
+    height: 48,
+    paddingHorizontal: 8,
+  },
+  input: {
+    backgroundColor: "#FAFAFA",
+    borderRadius: 10,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    fontSize: 15,
+    marginBottom: 14,
+    borderWidth: 1,
+    borderColor: "#DDD",
+  },
+  textarea: {
+    height: 100,
+    textAlignVertical: "top",
+  },
+  row: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    gap: 12,
+  },
+  rowItem: {
+    flex: 1,
+  },
+  buttonRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 24,
+    gap: 12,
+  },
+  cancelButton: {
+    flex: 1,
+    backgroundColor: "#B0BEC5",
+    paddingVertical: 14,
+    borderRadius: 10,
     alignItems: "center",
-    marginTop: 10,
-    marginBottom: 24,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 6,
-    elevation: 3,
+  },
+  saveButton: {
+    flex: 1,
+    backgroundColor: "#D32F2F",
+    paddingVertical: 14,
+    borderRadius: 10,
+    alignItems: "center",
   },
   buttonText: {
     color: "#FFF",
-    fontSize: 18,
     fontWeight: "bold",
-  },
-  previewCard: {
-    backgroundColor: "#FFF",
-    padding: 20,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: "#E0E0E0",
-    shadowColor: "#000",
-    shadowOpacity: 0.05,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 8,
-    elevation: 2,
-    marginBottom: 40,
-  },
-  previewTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 12,
-    color: "#333",
-  },
-  previewText: {
-    fontSize: 15,
-    color: "#444",
-    marginBottom: 6,
-  },
-  previewLabel: {
-    fontWeight: "bold",
-    color: "#2A2A2A",
+    fontSize: 16,
   },
 });

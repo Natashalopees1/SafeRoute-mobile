@@ -12,7 +12,7 @@ export default function Header({ onLoginPress, onRegisterPress, onAboutUsPress, 
           <Text style={styles.buttonText}>Cadastre-se</Text>
         </TouchableOpacity>
         <TouchableOpacity style={[styles.button, styles.registerButton]} onPress={onAboutUsPress}>
-          <Text style={styles.buttonText}>Mais sobre nós</Text>
+          <Text style={styles.buttonText}>Home</Text>
         </TouchableOpacity>
         <TouchableOpacity style={[styles.button]} onPress={onMembersPress }>
           <Text style={styles.buttonText}>Participantes</Text>

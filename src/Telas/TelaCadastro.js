@@ -7,40 +7,20 @@ export default function TelaCadastro({ navigation }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [cep, setCep] = useState("");
-  const [address, setAddress] = useState(null);
 
   const handleRegister = async () => {
-    if (!name || !email || !password || !cep) {
-      Alert.alert("Campos obrigatórios", "Por favor, preencha todos os campos!");
+    if (!name || !email || !password ) {
+      alert("Campos obrigatórios", "Por favor, preencha todos os campos!");
       return;
     }
 
     try {
       await AsyncStorage.setItem("email", email);
       await AsyncStorage.setItem("senha", password);
-      Alert.alert("Cadastro realizado", `Usuário ${email} cadastrado com sucesso!`);
+      alert("Cadastro realizado", `Usuário ${email} cadastrado com sucesso!`);
       navigation.goBack();
     } catch (e) {
-      Alert.alert("Erro", "Erro ao salvar dados localmente.");
-    }
-  };
-
-  const fetchAddress = async () => {
-    if (cep.length !== 8) {
-      Alert.alert("Erro", "Por favor, insira um CEP válido com 8 dígitos.");
-      return;
-    }
-
-    try {
-      const response = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
-      if (response.data.erro) {
-        Alert.alert("Erro", "CEP não encontrado.");
-      } else {
-        setAddress(response.data);
-      }
-    } catch (error) {
-      Alert.alert("Erro", "Não foi possível buscar o endereço.");
+      alert("Erro", "Erro ao salvar dados localmente.");
     }
   };
 
@@ -73,27 +53,7 @@ export default function TelaCadastro({ navigation }) {
         onChangeText={setPassword}
         placeholderTextColor="#999"
       />
-      <TextInput
-        style={styles.input}
-        placeholder="Seu CEP"
-        keyboardType="numeric"
-        value={cep}
-        onChangeText={setCep}
-        placeholderTextColor="#999"
-      />
-
-      <TouchableOpacity style={styles.buttonOutline} onPress={fetchAddress}>
-        <Text style={styles.buttonTextOutline}>🔍 Buscar Endereço</Text>
-      </TouchableOpacity>
-
-      {address && (
-        <View style={styles.addressContainer}>
-          <Text style={styles.addressTitle}>📍 Endereço localizado:</Text>
-          <Text style={styles.addressText}>Bairro: {address.bairro}</Text>
-          <Text style={styles.addressText}>Cidade: {address.localidade}</Text>
-        </View>
-      )}
-
+     
       <TouchableOpacity style={styles.buttonFilled} onPress={handleRegister}>
         <Text style={styles.buttonTextFilled}>✅ Cadastrar</Text>
       </TouchableOpacity>
@@ -104,7 +64,7 @@ export default function TelaCadastro({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F0F4F8",
+    backgroundColor: "#455A64",
     justifyContent: "center",
     alignItems: "center",
     padding: 24,
@@ -112,7 +72,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: "bold",
-    color: "#093E61",
+    color: "#E53935",
     marginBottom: 6,
   },
   subtitle: {
@@ -139,7 +99,7 @@ const styles = StyleSheet.create({
   },
   buttonOutline: {
     borderWidth: 1.5,
-    borderColor: "#093E61",
+    borderColor: "#E53935",
     paddingVertical: 14,
     borderRadius: 12,
     width: "100%",
@@ -148,12 +108,12 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
   },
   buttonTextOutline: {
-    color: "#093E61",
+    color: "#E53935",
     fontWeight: "600",
     fontSize: 16,
   },
   buttonFilled: {
-    backgroundColor: "#093E61",
+    backgroundColor: "#E53935",
     paddingVertical: 16,
     borderRadius: 12,
     width: "100%",
@@ -182,7 +142,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 16,
     marginBottom: 8,
-    color: "#093E61",
+    color: "#E53935",
   },
   addressText: {
     fontSize: 15,

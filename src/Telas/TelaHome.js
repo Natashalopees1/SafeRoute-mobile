@@ -1,115 +1,155 @@
-import React from "react";
-import { View, TouchableOpacity, Text, StyleSheet, Image } from "react-native";
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Image,
+  Dimensions,
+} from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import SafeRoute from "../../src/assets/safeRoute.png";
 
 export default function TelaHome({ navigation }) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleLogin = async () => {
+    if (!email || !password) {
+      alert("Por favor, preencha todos os campos!");
+      return;
+    }
+
+    try {
+      const emailSalvo = await AsyncStorage.getItem("email");
+      const senhaSalva = await AsyncStorage.getItem("senha");
+
+      if (email === emailSalvo && password === senhaSalva) {
+        alert(`Bem-vindo, ${emailSalvo}!`);
+        navigation.navigate("TelaPrincipal");
+      } else {
+        alert("Credenciais inválidas. Verifique seu e-mail e senha.");
+      }
+    } catch (error) {
+      alert("Erro ao acessar o armazenamento local.");
+    }
+  };
+
   return (
     <View style={styles.container}>
-      <View style={styles.content}>
-        <Image
-          source={require("../assets/Mottu-sense.png")}
-          style={styles.logo}
+      <View style={styles.card}>
+        <Image source={SafeRoute} style={styles.logo} />
+        <Text style={styles.title}>Bem-vindo ao Safe Route</Text>
+
+        <TextInput
+          placeholder="E-mail"
+          placeholderTextColor="#fff"
+          style={styles.input}
+          value={email}
+          onChangeText={setEmail}
         />
 
-        <Text style={styles.subtitle}>
-          Controle total da sua frota na palma da mão.
-        </Text>
+        <TextInput
+          placeholder="Senha"
+          placeholderTextColor="#fff"
+          secureTextEntry
+          style={styles.input}
+          value={password}
+          onChangeText={setPassword}
+        />
 
-        <TouchableOpacity
-          style={styles.buttonPrimary}
-          onPress={() => navigation.navigate("TelaLogin")}
-        >
-          <Text style={styles.buttonTextPrimary}>🔐 Login</Text>
+        <TouchableOpacity style={styles.buttonPrimary} onPress={handleLogin}>
+          <Text style={styles.buttonText}>Entrar</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => alert("Função em desenvolvimento!")}>
+          <Text style={styles.linkText}>Esqueceu a senha?</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={styles.buttonPrimary}
+          style={styles.buttonSecondary}
           onPress={() => navigation.navigate("TelaCadastro")}
         >
-          <Text style={styles.buttonTextPrimary}>📝 Cadastre-se</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.buttonSecondary}
-          onPress={() => navigation.navigate("TelaPrincipal")}
-        >
-          <Text style={styles.buttonTextSecondary}>📖 Mais sobre nós</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.buttonSecondary}
-          onPress={() => navigation.navigate("TelaParticipantes")}
-        >
-          <Text style={styles.buttonTextSecondary}>👥 Participantes</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.buttonSecondary}
-          onPress={() => navigation.navigate("TelaFormulario")}
-        >
-          <Text style={styles.buttonTextSecondary}>🧾 Formulário</Text>
+          <Text style={styles.buttonText}>Criar Conta</Text>
         </TouchableOpacity>
       </View>
     </View>
   );
 }
 
+
+const { height, width } = Dimensions.get("window");
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F0F4F8",
-    paddingHorizontal: 24,
-  },
-  content: {
-    flex: 1,
-    justifyContent: "center",
+    backgroundColor: "#f8f6ff",
     alignItems: "center",
-    gap: 18,
-    paddingBottom: 40,
+    justifyContent: "center",
+  },
+  card: {
+    backgroundColor: "#455A64",
+    width: "100%",
+    height: "100%",
+    paddingVertical: 40,
+    paddingHorizontal: 30,
+    alignItems: "center",
+    justifyContent: "center",
+    elevation: 10,
+    shadowColor: "#000",
   },
   logo: {
-    width: 220,
-    height: 220,
-    resizeMode: "contain",
-    marginBottom: 12,
-  },
-  subtitle: {
-    fontSize: 18,
-    color: "#2C3E50",
-    textAlign: "center",
-    lineHeight: 26,
-    maxWidth: 320,
+    width: 90,
+    height: 90,
     marginBottom: 24,
-    fontWeight: "500",
+    resizeMode: "contain",
+  },
+  title: {
+    fontSize: 30,
+    fontWeight: "bold",
+    color: "#fff",
+    marginBottom: 24,
+  },
+  input: {
+    width: "100%",
+    height: 50,
+    backgroundColor: "rgba(255, 255, 255, 0.2)",
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    color: "#fff",
+    marginBottom: 16,
   },
   buttonPrimary: {
-    backgroundColor: "#093E61",
-    paddingVertical: 14,
-    paddingHorizontal: 30,
-    borderRadius: 14,
+    backgroundColor: "#fff",
     width: "100%",
+    paddingVertical: 16,
+    borderRadius: 30,
     alignItems: "center",
-    elevation: 3,
+    marginTop: 12,
   },
   buttonSecondary: {
-    backgroundColor: "#FFFFFF",
-    borderWidth: 1.5,
-    borderColor: "#093E61",
-    paddingVertical: 14,
-    paddingHorizontal: 30,
-    borderRadius: 14,
+    backgroundColor: "#fff",
     width: "100%",
+    paddingVertical: 16,
+    borderRadius: 30,
     alignItems: "center",
-    marginTop: 10,
-    elevation: 1,
+    marginTop: 14,
   },
-  buttonTextPrimary: {
-    color: "#FFFFFF",
-    fontWeight: "600",
+  buttonText: {
+    color: "#E53935",
     fontSize: 16,
+    fontWeight: "bold",
   },
-  buttonTextSecondary: {
-    color: "#093E61",
-    fontWeight: "600",
-    fontSize: 16,
+  linkText: {
+    color: "#fff",
+    fontSize: 14,
+    marginTop: 12,
+    textDecorationLine: "underline",
+  },
+  smallText: {
+    color: "#fff",
+    fontSize: 13,
+    marginTop: 8,
   },
 });

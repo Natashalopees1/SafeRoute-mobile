@@ -3,7 +3,6 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import TelaHome from "./src/Telas/TelaHome";
 import TelaCadastro from "./src/Telas/TelaCadastro";
-import TelaLogin from "./src/Telas/TelaLogin";
 import TelaPrincipal from "./src/Telas/TelaPrincipal";
 import TelaParticipantes from  "./src/Telas/TelaParticipantes";
 import TelaFormulario from  "./src/Telas/TelaFormulario";
@@ -25,15 +24,10 @@ export default function App() {
           component={TelaCadastro}
           options={{ title: "Cadastro" }} // Define o título da tela
         />
-        <Stack.Screen
-          name="TelaLogin"
-          component={TelaLogin}
-          options={{ title: "Login" }} // Define o título da tela
-        />
          <Stack.Screen
           name="TelaPrincipal"
           component={TelaPrincipal}
-          options={{ title: "Sobre nós" }} // Define o título da tela
+          options={{ title: "Home" }} // Define o título da tela
         />
          <Stack.Screen
           name="TelaParticipantes"
